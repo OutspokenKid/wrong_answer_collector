@@ -57,7 +57,7 @@ class HWPReader:
 
 if __name__ == "__main__":
 
-    # test.
+    # test....
     # wrong_answers_2_mp = WrongAnswers(
     #     "마플 수1",
     #     {
