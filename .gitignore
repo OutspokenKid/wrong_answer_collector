@@ -136,3 +136,5 @@ secrets.json
 
 # files for tailwindcss
 node_modules/
+
+/**/migrations/
