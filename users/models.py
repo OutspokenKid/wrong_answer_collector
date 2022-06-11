@@ -27,9 +27,9 @@ class WrongAnswers(core_models.TimeStampedModel):
     wrong_answers : "1,2,3,4"와 같은 형식의 string
     """
     user = models.ForeignKey(
-        "users.User", related_name="wrong_answers", blank=True, null=True, on_delete=models.DO_NOTHING)
+        "users.User", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
     study_class = models.ForeignKey(
-        "classes.StudyClass", related_name="wrong_answers", blank=True, null=True, on_delete=models.DO_NOTHING)
+        "classes.StudyClass", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
     # book = models.ForeignKey(
     #     "classes.Book", related_name="wrong_answers", blank=True, null=True, on_delete=models.DO_NOTHING)
     wrong_answers = models.CharField(max_length=1000)

@@ -52,7 +52,7 @@ class Book(core_models.TimeStampedModel):
     book_name : 책 이름, ex) 라이트쎈 수학1
     """
 
-    book_name = models.CharField(max_length=30, default="", null=True)
+    book_name = models.CharField(max_length=20, default="", null=True)
 
     def __str__(self):
         return self.book_name
