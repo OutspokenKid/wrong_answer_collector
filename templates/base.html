@@ -1,0 +1,22 @@
+{% load static %}
+
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel='stylesheet' type="text/css" href="{% static 'css/styles.css' %}"/>
+        <title>
+            KHG | {% block title %}{% endblock title %}
+        </title>
+        {% block head %} {% endblock head %}
+    </head>
+
+    <!-- tracking-tighter : 자간 설정. -->
+    <body class="tracking-tighter font-noto-sans">
+    
+    {% block content %}{% endblock content %}  
+
+    </body>
+
+</html>

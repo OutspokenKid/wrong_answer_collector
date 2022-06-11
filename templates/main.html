@@ -1,0 +1,17 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}메인 페이지.{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<span class="bg-red-50">
+
+    <p class="text-lg text-red-700">
+        메인페이지.
+    </p>
+</span>
+
+{% endblock content %}
