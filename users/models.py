@@ -9,27 +9,21 @@ class User(AbstractUser):
     study_class : 클래스 - foreign key
     """
 
-    korean_name = models.CharField(max_length=10, default="", null=True)
-    study_class = models.ForeignKey(
-        "classes.StudyClass", related_name="users", blank=True, null=True, on_delete=models.DO_NOTHING)
+    study_class = models.ManyToManyField(
+        "classes.StudyClass", related_name="users", blank=True)
 
     def __str__(self):
-        return self.korean_name
+        return self.username
 
+    def get_study_classes(self):
 
-class WrongAnswers(core_models.TimeStampedModel):
-    """
-    학생들의 오답 목록.
+        classes_string = ""
 
-    user : 학생, foreign_key
-    study_class : 반, foreign_key
-    book : 교재, foreign_key
-    wrong_answers : "1,2,3,4"와 같은 형식의 string
-    """
-    user = models.ForeignKey(
-        "users.User", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
-    study_class = models.ForeignKey(
-        "classes.StudyClass", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
-    # book = models.ForeignKey(
-    #     "classes.Book", related_name="wrong_answers", blank=True, null=True, on_delete=models.DO_NOTHING)
-    wrong_answers = models.CharField(max_length=1000)
+        for study_class in self.study_class.all():
+
+            if classes_string is not "":
+                classes_string += ","
+
+            classes_string += study_class.class_name
+
+        return classes_string

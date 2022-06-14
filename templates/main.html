@@ -2,16 +2,29 @@
 {% extends 'base.html' %}
 
 <!-- header에 넣을 블럭. -->
-{% block title %}메인 페이지.{% endblock title %}
+{% block title %}메인 페이지{% endblock title %}
 
 <!-- body에 넣을 블럭. -->
 {% block content %}
 
-<span class="bg-red-50">
+<div class="flex flex-col items-center justify-start w-full">
 
-    <p class="text-lg text-red-700">
-        메인페이지.
-    </p>
-</span>
+    <p class="mt-10 text_title">메인페이지</p>
+    
+    {% if user.is_authenticated  %}
+    <span class="my-2 text-gray-400">로그인 정보 : {{user.username}}</span>
+    <a class="my-2 btn_blue_on" href="{% url 'users:sign_out' %}">로그아웃</a>
+    
+        {% if user.is_staff %}
+        <a class="my-2 btn_blue_on" href="{% url 'classes:class_list' %}">오답 확인</a>
+        {% endif %}
+
+        <a class="my-2 btn_blue_on" href="{% url 'classes:wrong_answers_list' %}">오답 목록</a>
+        
+    {% else %}
+    <a class="my-2 btn_blue_on" href="{% url 'users:sign_in' %}">로그인</a>
+    {% endif %}
+        
+</div>
 
 {% endblock content %}

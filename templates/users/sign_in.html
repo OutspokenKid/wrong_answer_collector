@@ -1,0 +1,66 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}로그인 페이지{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="flex flex-col items-center justify-center w-full mx-auto mt-10" style="max-width: 20rem;">
+    
+    <input id="input_id" class="w-full px-4 py-2 mt-4 mb-2 text-base font-normal text-gray-600 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 hover:bg-gray-100" placeholder="아이디를 입력하세요." type="text">
+
+    <input id="input_pw" class="w-full px-4 py-2 mb-2 text-base font-normal text-gray-500 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 hover:bg-gray-100" placeholder="비밀번호를 입력하세요." type="password">
+
+    {% csrf_token %}
+    <button id="btn_submit" class="w-full btn_green_on">로그인</button>
+</div>
+
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    document.getElementById("btn_submit").addEventListener("click", function() {
+
+        let id_string = document.getElementById("input_id").value;
+        let pw_string = document.getElementById("input_pw").value;
+
+        if(!id_string) {
+            alert("아이디 입력해야지!");
+            return;
+        } else if(!pw_string) {
+            alert("비밀번호 입력해야지!");
+            return;
+        }
+
+        console.log(id_string + ", " + pw_string);
+
+        var on_success = function(data) {
+            
+            if(data.result) {
+                if("{{next}}" != "") {
+                    location.href = "{{next}}";
+                } else {
+                    location.href = "{% url 'core:main' %}";
+                }
+            } else if(data.message) {
+                alert(data.message);
+            }
+        }
+
+        var on_fail = function() {
+
+            alert("서버 전송 실패..");
+        }
+
+        var post_data = "id=" + id_string
+            + "&pw=" + pw_string;
+
+        library_http.load_by_ajax_post("{% url 'users:sign_in' %}", post_data, on_success, on_fail);
+    });
+
+</script>
+
+{% endblock content %}

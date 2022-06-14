@@ -1,0 +1,23 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}반 리스트{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div id="div_container1" class="flex flex-col items-center justify-start w-full">
+
+    <span class="mt-10 text_title">반을 선택하세요.</span>
+    
+    <div class="flex flex-row flex-wrap p-2">
+        
+        {% for study_class in study_classes %}
+        <a href="{% url 'classes:class_detail' study_class.pk %}" class="mb-2 mr-2 btn_blue_off">{{study_class}}</a>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

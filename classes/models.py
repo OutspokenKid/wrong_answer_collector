@@ -10,20 +10,31 @@ class StudyClass(core_models.TimeStampedModel):
     """
 
     class_name = models.CharField(max_length=30, default="", null=True)
-    subject = models.ForeignKey(
-        "classes.Subject", related_name="books", blank=True, null=True, on_delete=models.DO_NOTHING)
-    book = models.ManyToManyField(
-        "classes.Book", related_name="classes", blank=True, null=True)
+    subjects = models.ManyToManyField(
+        "classes.Subject", related_name="classes", blank=True)
+    books = models.ManyToManyField(
+        "classes.Book", related_name="classes", blank=True)
 
     def __str__(self) -> str:
         return self.class_name
 
+    def get_subjects_string(self):
+
+        subjects_string = ""
+
+        for subject in self.subjects.all():
+            if subjects_string != "":
+                subjects_string += ","
+
+            subjects_string += subject.subject_name
+
+        return subjects_string
+
     def get_books_string(self):
 
-        print(self.book.all())
         books_string = ""
 
-        for book in self.book.all():
+        for book in self.books.all():
             if books_string != "":
                 books_string += ","
 
@@ -56,3 +67,24 @@ class Book(core_models.TimeStampedModel):
 
     def __str__(self):
         return self.book_name
+
+
+class WrongAnswers(core_models.TimeStampedModel):
+    """
+    학생들의 오답 목록.
+
+    user : 학생, foreign_key
+    study_class : 반, foreign_key
+    subject : 과목, foreign_key
+    book : 교재, foreign_key
+    wrong_answers : "1,2,3,4"와 같은 형식의 string
+    """
+    user = models.ForeignKey(
+        "users.User", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
+    study_class = models.ForeignKey(
+        "classes.StudyClass", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        "classes.Subject", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
+    book = models.ForeignKey(
+        "classes.Book", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
+    wrong_answers = models.CharField(max_length=1000)

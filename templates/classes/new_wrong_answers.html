@@ -1,0 +1,384 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}오답 입력 페이지{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div id="div_container1" class="flex flex-col items-center justify-start w-full">
+    <span class="mt-10 text_title">반을 선택하세요.</span>
+    {% for study_class in study_classes %}
+    <button id="btn_class_{{study_class.pk}}" onclick="on_class_selected(this, {{study_class.pk}})" class="mt-2 btn_blue_off">{{study_class}}</button>
+    {% endfor %}
+    <button id="btn_confirm1" class="mt-4 btn_green_on">확인</button>
+</div>
+
+<div id="div_container2" class="flex-col items-center justify-start hidden w-full">
+    <span class="mt-10 text_title">과목을 선택하세요.</span>
+
+    <!-- 여기에 해당 반의 과목 리스트 띄워주기. -->
+    <div id="div_container_subject_list" class="flex flex-col"></div>
+
+    <span class="mt-4 text_title">교재를 선택하세요.</span>
+
+    <!-- 여기에 해당 반의 교재 리스트 띄워주기. -->
+    <div id="div_container_book_list" class="flex flex-col"></div>
+
+    <div class="flex flex-row mt-4">
+        <button id="btn_back_to_container1" class="mr-2 btn_red_on">이전</button>
+        <button id="btn_confirm2" class="mr-2 btn_green_on">확인</button>
+    </div>
+</div>
+
+<div id="div_container3" class="flex-col hidden mx-auto" style="max-width: 30rem; min-width: 20rem;">
+
+    <div class="grid grid-flow-row grid-cols-2 gap-2 p-2">
+        <button id="btn_back_to_container2" class="w-full btn_green_on">반/교재 다시 선택</button>
+        <button id="btn_clear" class="w-full btn_red_on" onclick="on_reset_wrong_answers_clicked()">오답 번호 초기화</button>
+    </div>
+
+    <div class="grid grid-flow-row grid-cols-3 gap-2 p-2">
+
+        <div id="wrong_answer_container" class="flex flex-row flex-wrap content-start w-full col-span-3 p-2" style="min-height: 10rem;"></div>
+        <hr class="col-span-3 hr_line">
+        <span id="text_input" class="w-full h-10 col-span-3 p-2 text-lg text-center text-gray-600"></span>
+        
+        {% for i in '123456789'|make_list %}
+        <button onclick="on_number_clicked({{i}})" class="w-full btn_blue_on">{{i}}</button>
+        {% endfor %}
+        <button onclick="on_clear_clicked()" class="w-full btn_red_on">지우기</button>
+        <button onclick="on_number_clicked(0)" class="w-full btn_blue_on">0</button>
+        <button onclick="on_add_clicked()" class="w-full btn_green_on">번호 추가</button>
+
+        {% csrf_token %}
+        <button id="btn_submit" class="w-full col-span-3 btn_green_on">오답 입력 완료</button>
+    </div>
+</div>
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    // 반 선택.
+    document.getElementById("btn_confirm1").addEventListener("click", function() {
+
+        if(selected_class_pk == -1) {
+            alert("반 선택 해야 함.");
+            return;
+        } else {
+            document.getElementById("div_container1").classList.add("hidden");
+            document.getElementById("div_container1").classList.remove("flex");
+
+            const on_success = function(data) {
+
+                // 과목 추가.
+                let subject_objects = JSON.parse(data.subject_objects);
+                let innerHtml = "";
+
+                for(let i=0; i<subject_objects.length; i++) {
+
+                    innerHtml += "<button id='btn_subject_" + subject_objects[i].pk + "' onclick='on_subject_selected(this, " + subject_objects[i].pk + ")' class='mt-2 btn_blue_off'>" + subject_objects[i].subject_name + "</button>";
+                }
+
+                document.getElementById("div_container_subject_list").innerHTML = innerHtml;
+
+                // 책 추가.
+                let book_objects = JSON.parse(data.book_objects);
+                innerHtml = "";
+
+                for(let i=0; i<book_objects.length; i++) {
+
+                    innerHtml += "<button id='btn_book_" + book_objects[i].pk + "' onclick='on_book_selected(this, " + book_objects[i].pk + ")' class='mt-2 btn_blue_off'>" + book_objects[i].book_name + "</button>";
+                }
+
+                document.getElementById("div_container_book_list").innerHTML = innerHtml;
+
+                if(data != null && data.result) {
+                    document.getElementById("div_container2").classList.remove("hidden");
+                    document.getElementById("div_container2").classList.add("flex");
+                }
+            }
+
+            const on_fail = function() {
+
+                alert("교재 불러오기 실패... 문의 바람.");
+            }
+
+            let url = "{% url 'classes:class_info' 870901 %}".replace("870901", "" + selected_class_pk);
+            library_http.load_by_ajax_get(url, on_success, on_fail);
+        }
+    });
+
+    document.getElementById("btn_back_to_container1").addEventListener("click", function() {
+
+        document.getElementById("div_container2").classList.add("hidden");
+        document.getElementById("div_container2").classList.remove("flex");
+
+        document.getElementById("div_container1").classList.add("flex");
+        document.getElementById("div_container1").classList.remove("hidden");
+
+        // 선택 초기화.
+        selected_subject_pk = -1;
+        selected_book_pk = -1;
+
+        // 컨테이너 비워주기.
+        document.getElementById("div_container_subject_list").innerHTML = "";
+        document.getElementById("div_container_book_list").innerHTML = "";
+    });
+
+    document.getElementById("btn_back_to_container2").addEventListener("click", function() {
+
+        if(confirm("반, 교재 다시 선택?")) {
+            document.getElementById("div_container3").classList.add("hidden");
+            document.getElementById("div_container3").classList.remove("flex");
+    
+            document.getElementById("div_container1").classList.add("flex");
+            document.getElementById("div_container1").classList.remove("hidden");
+    
+            // 선택 초기화.
+            selected_subject_pk = -1;
+            selected_book_pk = -1;
+            wrong_answers = [];
+            
+            // 컨테이너 비워주기.
+            document.getElementById("div_container_subject_list").innerHTML = "";
+            document.getElementById("div_container_book_list").innerHTML = "";
+            document.getElementById("wrong_answer_container").innerHTML = "";
+        }
+    });
+
+    document.getElementById("btn_confirm2").addEventListener("click", function() {
+
+        if(selected_class_pk == -1) {
+            alert("반 선택 해야 함.");
+            return;
+        } else if(selected_subject_pk == -1) {
+            alert("과목 선택해야 함.");
+            return;
+        } else if(selected_book_pk == -1) {
+            alert("교재 선택해야 함.");
+            return;
+        }
+
+        let class_name = document.getElementById("btn_class_" + selected_class_pk).innerText;
+        let subject_name = document.getElementById("btn_subject_" + selected_subject_pk).innerText;
+        let book_name = document.getElementById("btn_book_" + selected_book_pk).innerText;
+
+        if(confirm(class_name + ", " + subject_name + ", " + book_name + " 맞음?")) {
+            
+            document.getElementById("div_container2").classList.add("hidden");
+            document.getElementById("div_container2").classList.remove("flex");
+
+            document.getElementById("div_container3").classList.add("flex");
+            document.getElementById("div_container3").classList.remove("hidden");
+        }
+    });
+
+    document.getElementById("btn_submit").addEventListener("click", function() {
+        
+        if(confirm("오답 추가 끝?")) {
+
+            const on_success = function(data) {
+                
+                if(data != null && data.result) {
+
+                    alert("오답 추가 완료!");
+                    location.href = "{% url 'classes:wrong_answers_list' %}";
+                }
+            }
+
+            const on_fail = function() {
+
+                alert("오답 등록 실패... 문의 바람.");
+            }
+
+            const post_data = "selected_class_pk=" + encodeURIComponent(selected_class_pk)
+                + "&selected_subject_pk=" + encodeURIComponent(selected_subject_pk)
+                + "&selected_book_pk=" + encodeURIComponent(selected_book_pk)
+                + "&wrong_answers=" + encodeURIComponent(wrong_answers.toString());
+
+            library_http.load_by_ajax_post("{% url 'classes:new_wrong_answers' %}", post_data, on_success, on_fail);
+        }
+    });
+    
+</script>
+
+<script>
+
+    let selected_class_pk = -1;
+    let selected_subject_pk = -1;
+    let selected_book_pk = -1;
+    let wrong_answers = [];
+
+    function on_class_selected(view, pk) {
+
+        // 아무 것도 선택되지 않은 경우.
+        if(selected_class_pk == -1) {
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_class_pk = pk;
+
+        // 선택 해제하는 경우.
+        } else if(selected_class_pk == pk) {
+            view.classList.remove("btn_blue_on");
+            view.classList.add("btn_blue_off");
+            selected_class_pk = -1;
+
+        // 선택된게 있는데 다른 것을 선택한 경우.
+        } else {
+            last_selected_view = document.getElementById("btn_class_" + selected_class_pk);
+            last_selected_view.classList.remove("btn_blue_on");
+            last_selected_view.classList.add("btn_blue_off");
+
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_class_pk = pk;
+        }
+    }
+
+    function on_subject_selected(view, pk) {
+
+        // 아무 것도 선택되지 않은 경우.
+        if(selected_subject_pk == -1) {
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_subject_pk = pk;
+
+        // 선택 해제하는 경우.
+        } else if(selected_subject_pk == pk) {
+            view.classList.remove("btn_blue_on");
+            view.classList.add("btn_blue_off");
+            selected_subject_pk = -1;
+
+        // 선택된게 있는데 다른 것을 선택한 경우.
+        } else {
+            last_selected_view = document.getElementById("btn_subject_" + selected_subject_pk);
+            last_selected_view.classList.remove("btn_blue_on");
+            last_selected_view.classList.add("btn_blue_off");
+
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_subject_pk = pk;
+        }
+    }
+
+    function on_book_selected(view, pk) {
+
+        console.log()
+
+        // 아무 것도 선택되지 않은 경우.
+        if(selected_book_pk == -1) {
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_book_pk = pk;
+
+        // 선택 해제하는 경우.
+        } else if(selected_book_pk == pk) {
+            view.classList.remove("btn_blue_on");
+            view.classList.add("btn_blue_off");
+            selected_book_pk = -1;
+
+        // 선택된게 있는데 다른 것을 선택한 경우.
+        } else {
+            last_selected_view = document.getElementById("btn_book_" + selected_book_pk);
+            last_selected_view.classList.remove("btn_blue_on");
+            last_selected_view.classList.add("btn_blue_off");
+
+            view.classList.remove("btn_blue_off");
+            view.classList.add("btn_blue_on");
+            selected_book_pk = pk;
+        }
+    }
+
+    function on_reset_wrong_answers_clicked() {
+
+        if(confirm("진짜 오답 번호 초기화???")) {
+            wrong_answers = [];
+            document.getElementById("wrong_answer_container").innerHTML = "";   
+        }
+    }
+
+    function on_number_clicked(number) {
+
+        input_view = document.getElementById("text_input");
+        last_text = input_view.innerText;
+
+        if(last_text == "" && number == 0) {
+            return;
+        } else {
+            input_view.innerText = last_text + number;
+        }
+    }
+
+    function on_clear_clicked() {
+
+        document.getElementById("text_input").innerText = "";
+    }
+
+    function on_add_clicked() {
+
+        // 추가할 문항 번호.
+        wrong_answer = document.getElementById("text_input").innerText;
+
+        if(wrong_answer) {
+
+            // 기존 오답 목록에 없는 번호라면,
+            if(!wrong_answers.includes(wrong_answer)) {
+                
+                // 오답 목록에 추가.
+                wrong_answers.push(parseInt(wrong_answer));
+    
+                // 오답 재정렬.
+                set_wrong_answers_view();
+            }
+    
+            // 문항 번호 입력부분 초기화.
+            document.getElementById("text_input").innerText = "";
+        }
+
+    }
+
+    function set_wrong_answers_view() {
+        
+        wrong_answers.sort(function(a, b) {
+            return a - b;
+        });
+
+        let container = document.getElementById("wrong_answer_container");
+        let innerHtml = ""
+
+        for(let i=0; i<wrong_answers.length; i++) {
+
+            innerHtml += "<button onclick='remove_wrong_answer("
+                + wrong_answers[i] 
+                + ")' class='h-10 p-2 mb-2 mr-2 text-base text-gray-700 bg-blue-100 rounded-lg shadow-md'>"
+                + wrong_answers[i]
+                + "</button>";            
+        }
+
+        container.innerHTML = innerHtml;
+    }
+
+    function remove_wrong_answer(answer_number) {
+
+        if(confirm(answer_number + "번 삭제?")) {
+
+            if(wrong_answers.includes(answer_number)) {
+
+                for(let i=0; i<wrong_answers.length; i++) {
+
+                    if(wrong_answers[i] == answer_number) {
+
+                        wrong_answers.splice(i, 1);
+                    }
+                }
+            }
+            set_wrong_answers_view();       
+        }
+    }
+
+</script>
+
+{% endblock content %}

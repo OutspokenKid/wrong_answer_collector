@@ -1,5 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+.hr_line {
+    @apply w-full h-0.5 bg-gray-200 border-none;
+}
+
+.btn_blue_on {
+    @apply px-4 py-2 text-lg font-normal text-white bg-blue-400 rounded-lg cursor-pointer select-none;
+}
+
+.btn_blue_off {
+    @apply px-4 py-2 text-lg font-normal text-blue-500 rounded-lg cursor-pointer select-none bg-blue-50;
+}
+
+.btn_green_on {
+    @apply px-4 py-2 text-lg font-normal text-white rounded-lg cursor-pointer select-none bg-emerald-500;
+}
+
+.btn_red_on {
+    @apply px-4 py-2 text-lg font-normal text-white bg-red-500 rounded-lg cursor-pointer select-none;
+}
+
+/*
+Text 정의.
+*/
+.text_title {
+    @apply text-lg font-bold text-gray-700;
+}
+
+.text_info {
+    @apply text-base font-normal text-gray-500;
+}
