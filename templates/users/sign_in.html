@@ -7,14 +7,14 @@
 <!-- body에 넣을 블럭. -->
 {% block content %}
 
-<div class="flex flex-col items-center justify-center w-full mx-auto mt-10" style="max-width: 20rem;">
+<div class="flex flex-col items-center justify-center w-full p-4 mx-auto mt-16" style="max-width: 20rem;">
     
-    <input id="input_id" class="w-full px-4 py-2 mt-4 mb-2 text-base font-normal text-gray-600 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 hover:bg-gray-100" placeholder="아이디를 입력하세요." type="text">
+    <input id="input_id" class="w-full mt-4 input_sign hover:bg_blue_50 focus:outline-none" placeholder="아이디를 입력하세요." type="text">
 
-    <input id="input_pw" class="w-full px-4 py-2 mb-2 text-base font-normal text-gray-500 border border-gray-300 rounded-lg focus:outline-none focus:bg-gray-100 hover:bg-gray-100" placeholder="비밀번호를 입력하세요." type="password">
+    <input id="input_pw" class="w-full mt-2 input_sign hover:bg_blue_50 focus:outline-none" placeholder="비밀번호를 입력하세요." type="password">
 
     {% csrf_token %}
-    <button id="btn_submit" class="w-full btn_green_on">로그인</button>
+    <button id="btn_submit" class="w-full mt-2 btn_green_on">로그인</button>
 </div>
 
 

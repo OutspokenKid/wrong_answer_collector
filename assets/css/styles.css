@@ -5,6 +5,11 @@
 @import "tailwindcss/utilities";
 
 
+.div_container {
+
+    @apply flex flex-col justify-start w-full p-4 mx-auto mt-16 min-w-khg-half max-w-khg-full;
+}
+
 .hr_line {
     @apply w-full h-0.5 bg-gray-200 border-none;
 }
@@ -25,11 +30,28 @@
     @apply px-4 py-2 text-lg font-normal text-white bg-red-500 rounded-lg cursor-pointer select-none;
 }
 
+.btn_dropdown_link {
+    @apply block px-4 py-2 mt-2 text-base text-center text-blue-500 cursor-pointer select-none;
+
+    &:focus {
+        @apply outline-none;
+    }
+}
+
 /*
 Text 정의.
+
+1. input_sign
+2. text_title
+3. text_info
 */
+
+.input_sign {
+    @apply px-4 py-2 text-base font-normal text-blue-700 border-2 border-blue-300 rounded-lg;
+}
+
 .text_title {
-    @apply text-lg font-bold text-gray-700;
+    @apply text-xl font-bold text-gray-700;
 }
 
 .text_info {

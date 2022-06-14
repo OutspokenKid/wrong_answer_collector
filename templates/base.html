@@ -14,8 +14,10 @@
 
     <!-- tracking-tighter : 자간 설정. -->
     <body class="tracking-tighter font-noto-sans">
-    
-    {% block content %}{% endblock content %}  
+        
+        {% include "partials/nav.html" %}
+
+        {% block content %}{% endblock content %}  
 
     </body>
 

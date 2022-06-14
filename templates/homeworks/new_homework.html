@@ -7,43 +7,47 @@
 <!-- body에 넣을 블럭. -->
 {% block content %}
 
-<div id="div_container1" class="flex flex-col items-center justify-start w-full">
-    <span class="mt-10 text_title">반을 선택하세요.</span>
+<div class="div_container">
 
-    <div class="flex flex-row flex-wrap mt-2">
-        {% for study_class in study_classes %}
-        <button id="btn_class_{{study_class.pk}}" onclick="on_class_selected(this, {{study_class.pk}})" class="mt-2 mr-2 btn_blue_off">{{study_class}}</button>
-        {% endfor %}
-    </div>
-    <button id="btn_confirm1" class="mt-4 btn_green_on">확인</button>
-</div>
-
-<div id="div_container2" class="flex-col items-center justify-start hidden w-full">
-    <span class="mt-10 text_title">과목을 선택하세요.</span>
-
-    <!-- 여기에 해당 반의 과목 리스트 띄워주기. -->
-    <div id="div_container_subject_list" class="flex flex-row flex-wrap"></div>
-
-    <span class="mt-4 text_title">교재를 선택하세요.</span>
-
-    <!-- 여기에 해당 반의 교재 리스트 띄워주기. -->
-    <div id="div_container_book_list" class="flex flex-row flex-wrap"></div>
-
-    <span class="mt-4 text_title">숙제를 할 사람을 선택하세요.</span>
-
-    <!-- 여기에 해당 반의 인원 띄워주기. -->
-    <div id="div_container_user_list" class="flex flex-row flex-wrap"></div>
-
-    <span class="mt-4 text_title">숙제 내용을 입력하세요.</span>
-    <input id="input_homework" class="px-4 py-2 mt-4 rounded-lg w-khg-half bg-blue-50 hover:bg-blue-50 focus:outline-none focus:bg-blue-50" type="text" placeholder="ex) 지수 전체 or 1~113번">
-
-    <div class="flex flex-row mt-4">
-        {% csrf_token %}
-        <button id="btn_back_to_container1" class="mr-2 btn_red_on">이전</button>
-        <button id="btn_submit" class="mr-2 btn_green_on">확인</button>
+    <div id="div_container1" class="flex flex-col justify-start w-full">
+        <span class="text_title">반 선택</span>
+    
+        <div class="flex flex-row flex-wrap mt-4">
+            {% for study_class in study_classes %}
+            <button id="btn_class_{{study_class.pk}}" onclick="on_class_selected(this, {{study_class.pk}})" class="mt-2 mr-2 btn_blue_off">{{study_class}}</button>
+            {% endfor %}
+        </div>
+        <button id="btn_confirm1" class="mt-4 btn_green_on">확인</button>
     </div>
     
+    <div id="div_container2" class="flex-col justify-start hidden w-full">
+        <span class="text_title">과목 선택</span>
+    
+        <!-- 여기에 해당 반의 과목 리스트 띄워주기. -->
+        <div id="div_container_subject_list" class="flex flex-row flex-wrap"></div>
+    
+        <span class="mt-4 text_title">교재 선택</span>
+    
+        <!-- 여기에 해당 반의 교재 리스트 띄워주기. -->
+        <div id="div_container_book_list" class="flex flex-row flex-wrap"></div>
+    
+        <span class="mt-4 text_title">인원 선택</span>
+    
+        <!-- 여기에 해당 반의 인원 띄워주기. -->
+        <div id="div_container_user_list" class="flex flex-row flex-wrap"></div>
+    
+        <span class="mt-4 text_title">숙제 내용</span>
+        <input id="input_homework" class="px-4 py-2 mt-4 rounded-lg w-khg-half bg-blue-50 hover:bg-blue-50 focus:outline-none focus:bg-blue-50" type="text" placeholder="ex) 지수 전체 or 1~113번">
+    
+        <div class="flex flex-row mt-4">
+            {% csrf_token %}
+            <button id="btn_back_to_container1" class="mr-2 btn_red_on">이전</button>
+            <button id="btn_submit" class="mr-2 btn_green_on">확인</button>
+        </div>
+        
+    </div>
 </div>
+
 
 {% load static %}
 <script type="module">
