@@ -1,0 +1,55 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}숙제 목록{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="flex flex-col items-start justify-start w-full p-4">
+
+    <span class="text_title">숙제 목록</span>
+        
+    {% if user.is_staff %}
+    <a href="{% url 'homeworks:new_homework' %}" class="mt-4 btn_green_on">새로운 숙제 추가하기</a>
+    {% endif %}
+        
+    <hr class="mt-4 hr_line">
+
+    <div class="flex flex-col w-full">
+        
+        {% for pk, study_class, subject, book, homework_text, video_url, created_at, is_wrong_answer_added in zip_for_homework %}
+            
+        <span class="mt-2 text_info">{{study_class}} / {{subject}} / {{book}} / {{homework_text}}</span>
+        <span class="mt-2 text_info">{{created_at | date:'Y/n/j D'}}</span>
+        
+        {% if user.is_staff or is_wrong_answer_added %}
+        <button onclick="wrong_answer_detail({{pk}})" class="mt-2 btn_blue_on">오답 보기</button>
+        {% else %}
+        <button onclick="new_wrong_answer({{pk}})" class="mt-2 btn_green_on">오답 등록하기</button>
+        {% endif %}
+            
+        <hr class="mt-2 hr_line">
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+
+    function new_wrong_answer(homework_pk) {
+
+        let url = "{% url 'homeworks:new_wrong_answer' 870901 %}".replace("870901", "" + homework_pk);
+        location.href = url;
+    }
+
+    function wrong_answer_detail(homework_pk) {
+
+        let url = "{% url 'homeworks:homework_detail' 870901 %}".replace("870901", "" + homework_pk);
+        location.href = url;
+    }
+
+</script>
+
+{% endblock content %}

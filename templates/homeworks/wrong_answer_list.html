@@ -1,0 +1,31 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}오답 리스트{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="flex flex-col items-start justify-start w-full p-4">
+
+    <span class="text_title">내 오답 리스트</span>
+    
+    <hr class="mt-10 hr_line">
+
+    <div class="flex flex-col w-full">
+
+        {% for wrong_answer in wrong_answers %}
+        <span class="mt-2 text_info">{{wrong_answer.homework}}</span>
+        <span class="mt-2 text_info">{{wrong_answer.wrong_answer_string}}</span>
+        <span class="mt-2 text_info">{{wrong_answer.created_at | date:'Y/n/j D'}}</span>
+        <hr class="mt-2 hr_line">
+        {% empty %}
+        <span class="mt-2 text_info">아직 오답이 없음</span>
+        <hr class="mt-2 hr_line">
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

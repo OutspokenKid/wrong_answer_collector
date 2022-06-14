@@ -1,0 +1,72 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}숙제{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="flex flex-col mx-auto mt-10 max-w-khg-quarter3 min-w-khg-half">
+
+    <span class="text_title">{{homework}}</span>
+    <span class="mt-2 text_info">{{homework.created_at | date:'Y/n/j D'}}</span>
+    <hr class="mt-4 hr_line">
+
+    <span class="mt-4 text_title">우리 반의 오답</span>
+
+    <div class="flex flex-row flex-wrap">
+
+        {% for answer in homework.get_wrong_answer_union %}
+        <span class="mt-2 mr-2 btn_blue_off">{{answer}}</span>
+        {% endfor %}
+    </div>
+
+    <hr class="mt-4 hr_line">
+
+    {% if submitter %}
+    <span class="mt-4 text_title">제출자</span>
+    <div class="flex flex-row flex-wrap">
+        {% for user in submitter %}
+        <span class="mt-2 mr-2 btn_blue_off">{{user}}</span>
+        {% endfor %}
+    </div>
+    <hr class="mt-4 hr_line">
+    {% endif %}
+        
+    {% if unsubmitted %}
+    <span class="mt-4 text_title">미제출자</span>
+
+    <div class="flex flex-row flex-wrap">
+        {% for user in unsubmitted %}
+        <span class="mt-2 mr-2 btn_blue_off">{{user}}</span>
+        {% endfor %}
+    </div>
+    <hr class="mt-4 hr_line">
+    {% endif %}
+        
+    {% if my_wrong_answer %}
+    <span class="mt-4 text_title">나의 오답</span>
+
+    <div class="flex flex-row flex-wrap">
+
+        {% for answer in my_wrong_answer %}
+        <span class="mt-2 mr-2 btn_blue_off">{{answer}}</span>
+        {% endfor %}
+    </div>
+
+    <hr class="mt-4 hr_line">
+    {% endif %}
+
+    <span class="mt-4 text_title">해설 영상</span>
+
+    {% if homework.video_url %}
+    <a class="text-base font-normal text-blue-500" href="{{homework.video_url}}" target="_blank">{{homework.video_url}}</a>
+    {% else %}
+    <span class="mt-4 text_info">업로드 전</span>
+    {% endif %}
+    <hr class="mt-4 hr_line">
+    
+</div>
+
+{% endblock content %}

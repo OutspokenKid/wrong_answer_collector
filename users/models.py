@@ -21,7 +21,7 @@ class User(AbstractUser):
 
         for study_class in self.study_class.all():
 
-            if classes_string is not "":
+            if classes_string != "":
                 classes_string += ","
 
             classes_string += study_class.class_name

@@ -17,10 +17,12 @@ module.exports = {
                 'khg-full': '40rem',
             },
             minWidth: {
-                'khg-half': '20rem'
+                'khg-half': '20rem',
             },
             maxWidth: {
-                'khg-full': '40rem'
+                'khg-half': '20rem',
+                'khg-quarter3': '30rem',
+                'khg-full': '40rem',
             },
             fontFamily: {
                 'noto-sans': ['Noto Sans KR'],

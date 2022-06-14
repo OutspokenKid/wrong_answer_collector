@@ -14,17 +14,12 @@
     {% if user.is_authenticated  %}
     <span class="my-2 text-gray-400">로그인 정보 : {{user.username}}</span>
     <a class="my-2 btn_blue_on" href="{% url 'users:sign_out' %}">로그아웃</a>
-    
-        {% if user.is_staff %}
-        <a class="my-2 btn_blue_on" href="{% url 'classes:class_list' %}">오답 확인</a>
-        {% endif %}
-
-        <a class="my-2 btn_blue_on" href="{% url 'classes:wrong_answers_list' %}">오답 목록</a>
-        
     {% else %}
     <a class="my-2 btn_blue_on" href="{% url 'users:sign_in' %}">로그인</a>
     {% endif %}
-        
+
+    
+    <a class="my-2 btn_blue_on" href="{% url 'homeworks:homework_list' %}">숙제 목록</a>    
 </div>
 
 {% endblock content %}

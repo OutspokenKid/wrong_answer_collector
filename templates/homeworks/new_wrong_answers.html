@@ -1,0 +1,163 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}오답 입력 페이지{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="flex flex-col mx-auto mt-10 max-w-khg-quarter3 min-w-khg-half">
+
+    <span class="text_title">오답 입력 페이지</span>
+    
+    <span class="text_info">{{homework}}</span>
+
+    <button id="btn_clear" class="w-full mt-4 btn_red_on" onclick="on_reset_wrong_answers_clicked()">오답 번호 초기화</button>
+
+    <div class="grid grid-flow-row grid-cols-3 gap-2 p-2">
+
+        <div id="wrong_answer_container" class="flex flex-row flex-wrap content-start w-full col-span-3 p-2" style="min-height: 10rem;"></div>
+        <hr class="col-span-3 hr_line">
+        <span id="text_input" class="w-full h-10 col-span-3 p-2 text-lg text-center text-gray-600"></span>
+        
+        {% for i in '123456789'|make_list %}
+        <button onclick="on_number_clicked({{i}})" class="w-full btn_blue_on">{{i}}</button>
+        {% endfor %}
+        <button onclick="on_clear_clicked()" class="w-full btn_red_on">지우기</button>
+        <button onclick="on_number_clicked(0)" class="w-full btn_blue_on">0</button>
+        <button onclick="on_add_clicked()" class="w-full btn_green_on">번호 추가</button>
+
+        {% csrf_token %}
+        <button id="btn_submit" class="w-full col-span-3 btn_green_on">오답 입력 완료</button>
+    </div>
+</div>
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    document.getElementById("btn_submit").addEventListener("click", function() {
+        
+        if(confirm("오답 추가 끝?")) {
+
+            const on_success = function(data) {
+                
+                if(data != null && data.result) {
+
+                    if(data.message) {
+                        alert(data.message);
+                    }
+                    
+                    location.href = "{% url 'homeworks:homework_list' %}";
+                }
+            }
+
+            const on_fail = function() {
+
+                alert("오답 등록 실패... 문의 바람.");
+            }
+
+            const post_data = "homework_pk=" + encodeURIComponent({{homework_pk}})
+                + "&wrong_answers=" + encodeURIComponent(wrong_answers.toString());
+
+            library_http.load_by_ajax_post("{% url 'homeworks:new_wrong_answer' homework_pk %}", post_data, on_success, on_fail);
+        }
+    });
+    
+</script>
+
+<script>
+
+    let wrong_answers = [];
+
+    function on_reset_wrong_answers_clicked() {
+
+        if(confirm("진짜 오답 번호 초기화???")) {
+            wrong_answers = [];
+            document.getElementById("wrong_answer_container").innerHTML = "";   
+        }
+    }
+
+    function on_number_clicked(number) {
+
+        input_view = document.getElementById("text_input");
+        last_text = input_view.innerText;
+
+        if(last_text == "" && number == 0) {
+            return;
+        } else {
+            input_view.innerText = last_text + number;
+        }
+    }
+
+    function on_clear_clicked() {
+
+        document.getElementById("text_input").innerText = "";
+    }
+
+    function on_add_clicked() {
+
+        // 추가할 문항 번호.
+        wrong_answer = document.getElementById("text_input").innerText;
+
+        if(wrong_answer) {
+
+            // 기존 오답 목록에 없는 번호라면,
+            if(!wrong_answers.includes(wrong_answer)) {
+                
+                // 오답 목록에 추가.
+                wrong_answers.push(parseInt(wrong_answer));
+    
+                // 오답 재정렬.
+                set_wrong_answers_view();
+            }
+    
+            // 문항 번호 입력부분 초기화.
+            document.getElementById("text_input").innerText = "";
+        }
+
+    }
+
+    function set_wrong_answers_view() {
+        
+        wrong_answers.sort(function(a, b) {
+            return a - b;
+        });
+
+        let container = document.getElementById("wrong_answer_container");
+        let innerHtml = ""
+
+        for(let i=0; i<wrong_answers.length; i++) {
+
+            innerHtml += "<button onclick='remove_wrong_answer("
+                + wrong_answers[i] 
+                + ")' class='h-10 p-2 mb-2 mr-2 text-base text-gray-700 bg-blue-100 rounded-lg shadow-md'>"
+                + wrong_answers[i]
+                + "</button>";            
+        }
+
+        container.innerHTML = innerHtml;
+    }
+
+    function remove_wrong_answer(answer_number) {
+
+        if(confirm(answer_number + "번 삭제?")) {
+
+            if(wrong_answers.includes(answer_number)) {
+
+                for(let i=0; i<wrong_answers.length; i++) {
+
+                    if(wrong_answers[i] == answer_number) {
+
+                        wrong_answers.splice(i, 1);
+                    }
+                }
+            }
+            set_wrong_answers_view();       
+        }
+    }
+
+</script>
+
+{% endblock content %}
