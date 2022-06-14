@@ -88,3 +88,29 @@ class WrongAnswers(core_models.TimeStampedModel):
     book = models.ForeignKey(
         "classes.Book", related_name="wrong_answers", blank=True, null=True, on_delete=models.CASCADE)
     wrong_answers = models.CharField(max_length=1000)
+
+
+class Homework(core_models.TimeStampedModel):
+    """
+    숙제
+
+    study_class : 어느 반의 숙제인지
+    subejct : 어느 과목의 숙제인지
+    book : 어느 교재의 숙제인지
+    homework_text : 그날의 진도 또는 숙제
+    user : 해당 숙제를 해야하는 유저.
+    video_link : 유튜브 영상 있다면 추후에 추가.
+    """
+
+    study_class = models.ForeignKey(
+        "classes.StudyClass", related_name="homeworks", blank=True, null=True, on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        "classes.Subject", related_name="homeworks", blank=True, null=True, on_delete=models.CASCADE)
+    book = models.ForeignKey(
+        "classes.Subject", related_name="homeworks", blank=True, null=True, on_delete=models.CASCADE)
+
+    homework_text = models.CharField(max_length=100)
+
+    user = models.ManyToManyField(
+        "users.User", related_name="homeworks", blank=True)
+    video_link = models.CharField(max_length=100)
