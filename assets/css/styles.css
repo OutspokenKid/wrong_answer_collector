@@ -7,7 +7,7 @@
 
 .div_container {
 
-    @apply flex flex-col justify-start w-full p-4 mx-auto mt-16 min-w-khg-half max-w-khg-full;
+    @apply flex flex-col justify-start w-full p-8 mx-auto mt-16 min-w-khg-half max-w-khg-full;
 }
 
 .hr_line {
@@ -15,19 +15,19 @@
 }
 
 .btn_blue_on {
-    @apply px-4 py-2 text-lg font-normal text-white bg-blue-400 rounded-lg cursor-pointer select-none;
+    @apply px-4 py-2 text-lg font-normal text-center text-white bg-blue-400 rounded-lg cursor-pointer select-none;
 }
 
 .btn_blue_off {
-    @apply px-4 py-2 text-lg font-normal text-blue-500 rounded-lg cursor-pointer select-none bg-blue-50;
+    @apply px-4 py-2 text-lg font-normal text-center text-blue-500 rounded-lg cursor-pointer select-none bg-blue-50;
 }
 
 .btn_green_on {
-    @apply px-4 py-2 text-lg font-normal text-white rounded-lg cursor-pointer select-none bg-emerald-500;
+    @apply px-4 py-2 text-lg font-normal text-center text-white rounded-lg cursor-pointer select-none bg-emerald-500;
 }
 
 .btn_red_on {
-    @apply px-4 py-2 text-lg font-normal text-white bg-red-500 rounded-lg cursor-pointer select-none;
+    @apply px-4 py-2 text-lg font-normal text-center text-white bg-red-500 rounded-lg cursor-pointer select-none;
 }
 
 .btn_dropdown_link {

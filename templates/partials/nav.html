@@ -43,7 +43,7 @@ https://tailwindcomponents.com/component/responsive-sidebar-with-dropdown
 
     <!-- 메뉴판 -->
     <div id="div_menu_container" class="absolute hidden origin-top-right bg-white rounded-md shadow-lg mt-14 right-4">
-        
+        <a class="btn_dropdown_link" href="{% url 'concepts:concept_list' %}">개념 목록</a>
         <a class="btn_dropdown_link" href="{% url 'homeworks:homework_list' %}">숙제 목록</a>
         <a class="btn_dropdown_link" href="{% url 'homeworks:wrong_answer_list' %}">오답 목록</a>
         

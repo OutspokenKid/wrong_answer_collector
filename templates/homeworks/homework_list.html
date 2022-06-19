@@ -12,7 +12,7 @@
     <span class="text_title">숙제 목록</span>
         
     {% if user.is_staff %}
-    <a href="{% url 'homeworks:new_homework' %}" class="w-48 mt-4 text-center btn_green_on">새로운 숙제 추가하기</a>
+    <a href="{% url 'homeworks:new_homework' %}" class="w-48 mt-4 btn_green_on">새로운 숙제 추가하기</a>
     {% endif %}
         
     <hr class="mt-4 hr_line">

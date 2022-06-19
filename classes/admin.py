@@ -18,6 +18,7 @@ class SubjectAdmin(admin.ModelAdmin):
 
     list_display = (
         "subject_name",
+        "pk",
     )
 
 

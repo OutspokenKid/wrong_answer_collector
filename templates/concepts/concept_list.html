@@ -1,0 +1,41 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}개념 목록{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="div_container">
+
+    <a href="{% url 'concepts:concept_list' %}" class="text_title">개념 목록</a>
+
+    <div class="flex flex-row flex-wrap mt-2">
+
+        {% for subject in subjects %}
+
+            {% if subject_pk == subject.pk %}
+            <a href="" class="mt-2 mr-2 btn_blue_on">{{subject}}</a>
+            {% else %}
+            <a href="{% url 'concepts:concept_list' %}?subject_pk={{subject.pk}}" class="mt-2 mr-2 btn_blue_off">{{subject}}</a>
+            {% endif %}
+        
+        {% endfor %}
+            
+    </div>
+        
+    <hr class="mt-4 hr_line">
+
+    {% for concept in concepts %}
+    <a href="{% url 'concepts:concept_detail' concept.pk %}" class="p-4 text_info">{{concept}}</a>
+    <hr class="hr_line">
+    {% empty %}
+
+    <span class="p-4 text_info">과목을 선택하세요.</span>
+    <hr class="hr_line">
+    {% endfor %}
+
+</div>
+
+{% endblock content %}
