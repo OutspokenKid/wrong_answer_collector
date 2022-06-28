@@ -22,7 +22,7 @@
 <script type="module">
     import * as library_http from "{% static 'js/library_http.js' %}"
 
-    document.getElementById("btn_submit").addEventListener("click", function() {
+    function sign_in() {
 
         let id_string = document.getElementById("input_id").value;
         let pw_string = document.getElementById("input_pw").value;
@@ -34,8 +34,6 @@
             alert("비밀번호 입력해야지!");
             return;
         }
-
-        console.log(id_string + ", " + pw_string);
 
         var on_success = function(data) {
             
@@ -59,6 +57,25 @@
             + "&pw=" + pw_string;
 
         library_http.load_by_ajax_post("{% url 'users:sign_in' %}", post_data, on_success, on_fail);
+    }
+
+    document.getElementById("btn_submit").addEventListener("click", function() {
+
+        sign_in();        
+    });
+
+    document.getElementById("input_pw").addEventListener("keyup", function() {
+
+        // 엔터키 입력.
+        if (window.event.keyCode == 13) {
+
+            sign_in();
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+
+        document.getElementById("input_id").focus();
     });
 
 </script>
