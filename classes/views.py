@@ -3,10 +3,6 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
-from operator import mod
-from statistics import mode
-from tokenize import group
-from turtle import home
 from . import models
 
 
