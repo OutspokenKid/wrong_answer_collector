@@ -13,18 +13,75 @@
 
     <hr class="mt-4 hr_line">
     
-    {% if concept.video_url %}
-    <a target="_blank" href="{{concept.video_url}}" class="mt-4 btn_blue_on">개념 영상 보러 가기</a>
+    <span class="mt-4 text_title ">강의 영상</span>
+
+    {% for thumbnail, url, title in zip_for_video %}
+    <a href="{{url}}" target="_blank" class="flex flex-col mt-4" style="width: 20rem;">
+        <span class="w-full text_info">{{title}}</span>
+        <img src="{{thumbnail}}" class="w-full col-span-2">
+    </a>
+    {% empty %}
+    <span class="mt-4 text_info">개념 영상을 등록해주세요.</span>
+    {% endfor %}
+    
+    {% if user.is_staff %}
+    <hr class="mt-4 hr_line">
+
+    <div class="flex flex-col mt-4">        
+        <div class="flex flex-row items-center w-full">
+            <span class="w-1/6 h-6 text-center text_info">링크</span>
+            <input id="input_id" type="url" class="w-5/6 input_sign hover:bg_blue_50 focus:outline-none" >
+        </div>
+        <button id="btn_add_video_id" class="col-span-3 mt-4 btn_green_on">개념 영상 링크 추가하기</button>
+    </div>
+    {% endif %}
+    
+    <hr class="mt-4 hr_line">
+
+    <span class="mt-4 text_title ">수업 자료 PDF</span>
+
+    {% if concept.pdf_url %}
+    <a target="_blank" href="{{concept.pdf_url}}" class="mt-4 btn_blue_on">학생용 프린트</a>
     {% endif %}
     
     {% if concept.pdf_teacher_url %}
-    <a target="_blank" href="{{concept.pdf_teacher_url}}" class="mt-4 btn_blue_on">교사용 프린트 다운로드</a>
+    <a target="_blank" href="{{concept.pdf_teacher_url}}" class="mt-4 btn_blue_on">교사용 프린트</a>
     {% endif %}
-    
-    {% if concept.pdf_url %}
-    <a target="_blank" href="{{concept.pdf_url}}" class="mt-4 btn_blue_on">개념 프린트 다운로드</a>
+
+    {% if not concept.pdf_url and not concept.pdf_teacher_url %}
+    <span class="mt-4 text_info">PDF파일을 등록해주세요.</span>
     {% endif %}
-        
 </div>
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    if(document.getElementById("btn_add_video_id") != null) {
+
+        document.getElementById("btn_add_video_id").addEventListener("click", function() {
+    
+            const video_id = document.getElementById("input_id").value;
+    
+            if(!video_id) {
+                return;
+            }
+    
+            let url = "{% url 'concepts:concept_add_video_id' concept.pk %}?";
+            let post_data = "&video_id=" + encodeURIComponent(video_id);
+    
+            const on_success = function(data) {
+    
+                if(data != null && data.result) {
+    
+                    location.href = window.location.href;
+                }
+            };
+            
+            library_http.load_by_ajax_post(url, post_data, on_success, null);
+    
+        });
+    }
+</script>
 
 {% endblock content %}

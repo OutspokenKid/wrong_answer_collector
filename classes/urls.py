@@ -8,4 +8,6 @@ urlpatterns = [
     path("", views.ClassListView.as_view(), name="class_list"),
     path("<int:pk>", views.ClassDetailView.as_view(), name="class_detail"),
     path("<int:pk>/info", views.ClassInfoView.as_view(), name="class_info"),
+
+    path("group/", views.GroupListView.as_view(), name="group_list"),
 ]

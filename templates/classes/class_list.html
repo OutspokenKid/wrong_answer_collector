@@ -2,19 +2,26 @@
 {% extends 'base.html' %}
 
 <!-- header에 넣을 블럭. -->
-{% block title %}반 목록{% endblock title %}
+{% block title %}수업 목록{% endblock title %}
 
 <!-- body에 넣을 블럭. -->
 {% block content %}
 
 <div id="div_container1" class="div_container">
 
-    <span class="text_title">반 목록</span>
+    <span class="text_title">내 수업 목록</span>
     
-    <div class="flex flex-row flex-wrap p-2">
+    <hr class="mt-4 hr_line">
+    
+    <div class="flex flex-col flex-wrap">
         
         {% for study_class in study_classes %}
-        <a href="{% url 'classes:class_detail' study_class.pk %}" class="mb-2 mr-2 btn_blue_off">{{study_class}}</a>
+        <a href="{% url 'classes:class_detail' study_class.pk %}" class="flex flex-col w-full mt-2">
+            <span class="text_info">{{study_class.study_group}} {{study_class.subject}} - {{study_class.concept}}</span>
+            <span class="text_info">{{study_class.studied_at|date:'y년 m월 d일 D A g시'}}</span>
+        </a>
+
+        <hr class="mt-2 hr_line">
         {% endfor %}
     </div>
 

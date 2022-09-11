@@ -10,13 +10,13 @@ class HomeworkAdmin(admin.ModelAdmin):
         "subject",
         "book",
         "homework_text",
-        "video_url",
-        "get_users_string",
+        "get_non_submit_users_string",
         "get_wrong_answer_union",
+        "get_num_of_wrong_answer",
     )
 
     list_filter = (
-        "study_class",
+        "study_class__study_group",
         "subject",
         "book",
     )

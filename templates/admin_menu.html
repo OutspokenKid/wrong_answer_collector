@@ -1,0 +1,48 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}관리자 메{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="div_container">
+
+    <p class="text_title">관리자 메뉴</p>
+    
+    <hr class="mt-4 hr_line">
+
+    <button id="btn_extract_information" class="mt-4 btn_blue_on">정보 추출</button>
+
+    <hr class="mt-4 hr_line">
+
+    <button id="btn_test" class="mt-4 btn_blue_on">그때그때 테스트</button>
+    
+</div>
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    function add_event_listener_to_button(id, url) {
+        
+        document.getElementById(id).addEventListener("click", function() {
+
+            const on_success = function() {
+    
+                alert("완료");
+            }
+    
+            library_http.load_by_ajax_get(url, on_success, null);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+
+        add_event_listener_to_button("btn_extract_information", "{% url 'core:extract_information' %}");
+        add_event_listener_to_button("btn_test", "{% url 'core:test' %}");
+    });
+
+</script>
+{% endblock content %}

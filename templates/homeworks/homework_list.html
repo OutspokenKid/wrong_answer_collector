@@ -19,9 +19,9 @@
 
     <div class="flex flex-col w-full">
         
-        {% for pk, study_class, subject, book, homework_text, video_url, created_at, is_wrong_answer_added in zip_for_homework %}
+        {% for pk, study_group, subject, book, homework_text, created_at, is_wrong_answer_added in zip_for_homework %}
             
-        <span class="mt-4 text_info">{{study_class}} / {{subject}} / {{book}} / {{homework_text}}</span>
+        <span class="mt-4 text_info">{{study_group}} / {{subject}} / {{book}} / {{homework_text}}</span>
         <span class="mt-4 text_info">{{created_at | date:'Y/n/j D'}}</span>
         
         {% if user.is_staff or is_wrong_answer_added %}

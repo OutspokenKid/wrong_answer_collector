@@ -9,7 +9,7 @@ class ConceptAdmin(admin.ModelAdmin):
         "subject",
         "get_title_with_number",
         "pdf_url",
-        "video_url",
+        "get_concept_video_ids",
     )
 
     list_filter = (

@@ -1,0 +1,104 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}{{study_class}}{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div class="div_container">
+
+    <span class="text_title">{{study_class}}</span>
+    
+    <span class="text_info">{{study_class.studied_at|date:'y년 m월 d일 D A g시'}}</span>
+    
+    <span class="mt-8 text_title">개념</span>
+    
+    {% if study_class.concept %}
+    <a href="{% url 'concepts:concept_detail' study_class.concept.pk %}" class="btn_blue_on">{{study_class.concept}}</a>
+    {% else %}
+    <span class="text_info">연관 개념 등록되지 않음</span>
+    {% endif %}
+        
+    <span class="mt-8 text_title">수업 영상</span>
+    
+    {% for thumbnail, url in zip_for_study_class_video %}
+    <a href="{{url}}" target="_blank" class="flex flex-col mt-4" style="width: 20rem;">
+        <img src="{{thumbnail}}" class="w-full col-span-2">
+    </a>
+    {% empty %}
+    <span class="mt-4 text_info">영상 등록 전</span>
+    {% endfor %}
+
+    <span class="mt-8 text_title">숙제</span>
+    
+    {% if study_class.homeworks.all %}
+        
+        <div class="flex flex-col" id="homework_container"></div>
+        
+        <span class="mt-8 text_title">숙제 해설 영상</span>
+
+        {% for thumbnail, url in zip_for_homework_video %}
+        <a href="{{url}}" target="_blank" class="flex flex-col mt-4" style="width: 20rem;">
+            <img src="{{thumbnail}}" class="w-full col-span-2">
+        </a>
+        {% empty %}
+        <span class="mt-4 text_info">영상 등록 전</span>
+        {% endfor %}
+    {% else %}
+        <span class="text_info">숙제 없음</span>
+    {% endif %}
+    
+    {% if user.is_staff %}
+    <a href="{% url 'homeworks:new_homework' %}?class_pk={{study_class.pk}}" class="mt-4 btn_green_on">숙제 추가하기</a>
+    <a href="" class="mt-4 btn_green_on">수업 내용 수정하기</a>
+    {% endif %}
+        
+</div>
+
+
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    function get_homeworks() {
+
+        var url = "{% url 'homeworks:check_homework' study_class.pk %}";
+        var on_success = function(data) {
+            
+            if(data && data.result) {
+                const homework_pks = data.homework_pks;
+                const homework_texts = data.homework_texts;
+                const homework_checks = data.homework_checks;
+                const homework_container = document.getElementById("homework_container");
+
+                for(let i=0; i<homework_pks.length; i++) {
+                   
+                    let inner_html = '<span class="mt-2 text_info">' + homework_texts[i] + '</span>';
+                    const url = "{% url 'homeworks:new_wrong_answer' pk=870901000000 %}".replace("870901000000", homework_pks[i]);
+
+                    if(homework_checks[i]) {
+                        inner_html += '<a href="' + url + '" class="btn_red_on">오답 수정하기</a>';
+                    } else {
+                        inner_html += '<a href="' + url + '" class="btn_green_on">오답 제출하기</a>';
+                    }
+
+                    homework_container.innerHTML += inner_html;
+                }
+            }
+        }
+        library_http.load_by_ajax_get(url, on_success, null);
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+
+        get_homeworks();
+    });
+
+    
+
+</script>
+
+{% endblock content %}

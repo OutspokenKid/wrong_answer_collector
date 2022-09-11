@@ -1,22 +1,23 @@
 from django.db import models
 from core import models as core_models
+import json
 
 
-class StudyClass(core_models.TimeStampedModel):
+class StudyGroup(core_models.TimeStampedModel):
     """
-    class_name : 반 이름, ex) 월수/수학1
+    group_name : 반 이름, ex) 월수/수학1
     subject : 과목
     book : 교재
     """
 
-    class_name = models.CharField(max_length=30, default="", null=True)
+    group_name = models.CharField(max_length=30, default="", null=True)
     subjects = models.ManyToManyField(
-        "classes.Subject", related_name="classes", blank=True)
+        "classes.Subject", related_name="groups", blank=True)
     books = models.ManyToManyField(
-        "classes.Book", related_name="classes", blank=True)
+        "classes.Book", related_name="groups", blank=True)
 
     def __str__(self) -> str:
-        return self.class_name
+        return self.group_name
 
     def get_subjects_string(self):
 
@@ -45,6 +46,65 @@ class StudyClass(core_models.TimeStampedModel):
     def get_users_count(self):
 
         return self.users.count()
+
+
+class StudyClass(core_models.TimeStampedModel):
+    """
+    그날 그날의 수업.
+
+    study_group : 어느 반의 수업인지.
+    subject : 어느 과목인지.
+    studied_at : 수업한 날과 시간.
+    concept : 그날 수업한 개념.
+    study_class_video_ids : 그날 수업의 영상.
+    homework_video_ids : 그날 수업의 영상.
+    """
+
+    def __str__(self) -> str:
+        return f"{self.study_group} - {self.concept}"
+
+    study_group = models.ForeignKey(
+        "StudyGroup", related_name="classes", blank=True, null=True, on_delete=models.CASCADE)
+
+    subject = models.ForeignKey(
+        "classes.Subject", related_name="classes", null=True, on_delete=models.CASCADE)
+
+    studied_at = models.DateTimeField(blank=True, null=True)
+
+    concept = models.ForeignKey(
+        "concepts.Concept", related_name="classes", blank=True, null=True, on_delete=models.CASCADE
+    )
+
+    study_class_video_ids = models.TextField(blank=True, null=True)
+    homework_video_ids = models.TextField(blank=True, null=True)
+
+    def save_study_class_video_ids(self, urls):
+
+        if not urls or len(urls) == 0:
+            return
+
+        self.study_class_video_ids = json.dumps(urls)
+        self.save()
+
+    def get_study_class_video_ids(self):
+
+        if self.study_class_video_ids:
+
+            return json.decoder.JSONDecoder().decode(self.study_class_video_ids)
+
+    def save_homework_video_ids(self, urls):
+
+        if not urls or len(urls) == 0:
+            return
+
+        self.homework_video_ids = json.dumps(urls)
+        self.save()
+
+    def get_homework_video_ids(self):
+
+        if self.homework_video_ids:
+
+            return json.decoder.JSONDecoder().decode(self.homework_video_ids)
 
 
 class Subject(core_models.TimeStampedModel):

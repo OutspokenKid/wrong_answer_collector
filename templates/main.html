@@ -18,6 +18,26 @@
 
     <hr class="mt-4 hr_line">
     
+    <!-- <button id="btn_db" class="mt-4 btn_blue_on">DB 복구하기</button> -->
+
 </div>
+
+{% load static %}
+<script type="module">
+    import * as library_http from "{% static 'js/library_http.js' %}"
+
+    document.getElementById("btn_db").addEventListener("click", function() {
+
+        const url = "{% url 'core:load_information' %}";
+
+        const on_success = function() {
+
+            alert("완료");
+        };
+
+        library_http.load_by_ajax_get(url, on_success, null);
+    });
+
+</script>
 
 {% endblock content %}

@@ -15,7 +15,6 @@ class HomeworkListView(View):
         subjects = []
         books = []
         homework_texts = []
-        video_urls = []
         created_ats = []
         is_wrong_answer_addeds = []
 
@@ -28,7 +27,6 @@ class HomeworkListView(View):
             subjects.append(homework.subject)
             books.append(homework.book)
             homework_texts.append(homework.homework_text)
-            video_urls.append(homework.video_url)
             created_ats.append(homework.created_at)
             is_wrong_answer_addeds.append(models.WrongAnswer.objects.filter(
                 homework=homework, user=request.user).exists())
@@ -39,7 +37,6 @@ class HomeworkListView(View):
             subjects,
             books,
             homework_texts,
-            video_urls,
             created_ats,
             is_wrong_answer_addeds,
         )
@@ -98,13 +95,14 @@ class NewHomeworkView(View):
 
     def get(self, request):
 
-        study_classes = class_models.StudyClass.objects.all()
+        class_pk = request.GET.get("class_pk", -1)
+        study_class = get_object_or_404(class_models.StudyClass, pk=class_pk)
 
         return render(
             request,
             "homeworks/new_homework.html",
             {
-                "study_classes": study_classes,
+                "study_class": study_class,
             },
         )
 
@@ -113,10 +111,9 @@ class NewHomeworkView(View):
         selected_class_pk = request.POST.get("selected_class_pk", -1)
         selected_subject_pk = request.POST.get("selected_subject_pk", -1)
         selected_book_pk = request.POST.get("selected_book_pk", -1)
-        selected_user_pks = request.POST.get("selected_user_pks", "")
         homework_text = request.POST.get("homework_text", None)
 
-        if selected_class_pk == -1 or selected_subject_pk == -1 or selected_book_pk == -1 or selected_user_pks == "" or homework_text == "":
+        if selected_class_pk == -1 or selected_subject_pk == -1 or selected_book_pk == -1 or homework_text == "":
 
             return JsonResponse({
                 "result": False,
@@ -136,12 +133,40 @@ class NewHomeworkView(View):
 
         homework.save()
 
-        for pk_string in selected_user_pks.split(","):
-            homework.users.add(int(pk_string))
-
         return JsonResponse({
             "result": True,
             "message": "숙제 등록 완료",
+        })
+
+
+class CheckHomework(View):
+
+    def get(self, request, pk):
+
+        homeworks = models.Homework.objects.filter(study_class=pk)
+
+        homework_pks = []
+        homework_texts = []
+        homework_checks = []
+
+        for homework in homeworks:
+            wrong_answers = models.WrongAnswer.objects.filter(
+                homework=homework, user=request.user)
+
+            homework_pks.append(homework.pk)
+            homework_texts.append(
+                homework.book.book_name + " - " + homework.homework_text)
+
+            if wrong_answers:
+                homework_checks.append(True)
+            else:
+                homework_checks.append(False)
+
+        return JsonResponse({
+            "result": True,
+            "homework_pks": homework_pks,
+            "homework_texts": homework_texts,
+            "homework_checks": homework_checks,
         })
 
 
@@ -167,27 +192,51 @@ class NewWrongAnswerView(View):
 
         homework = get_object_or_404(models.Homework, pk=pk)
 
-        return render(
-            request,
-            "homeworks/new_wrong_answers.html",
-            {
-                "homework": homework,
-                "homework_pk": pk,
-            },
-        )
+        try:
+            wrong_answer = models.WrongAnswer.objects.get(
+                user=request.user, homework=homework)
+
+            return render(
+                request,
+                "homeworks/new_wrong_answers.html",
+                {
+                    "homework": homework,
+                    "homework_pk": pk,
+                    "class_pk": homework.study_class.pk,
+                    "wrong_answer_string": wrong_answer.wrong_answer_string,
+                },
+            )
+
+        except models.WrongAnswer.DoesNotExist:
+
+            return render(
+                request,
+                "homeworks/new_wrong_answers.html",
+                {
+                    "homework": homework,
+                    "homework_pk": pk,
+                    "class_pk": homework.study_class.pk,
+                },
+            )
 
     def post(self, request, pk):
 
         wrong_answers = request.POST.get("wrong_answers", "")
         homework = get_object_or_404(models.Homework, pk=pk)
 
-        models.WrongAnswer.objects.create(
-            user=request.user,
-            homework=homework,
-            wrong_answer_string=wrong_answers,
-        )
+        try:
+            wrong_answer = models.WrongAnswer.objects.get(
+                user=request.user, homework=homework)
+            wrong_answer.wrong_answer_string = wrong_answers
+            wrong_answer.save()
+        except models.WrongAnswer.DoesNotExist:
+            models.WrongAnswer.objects.create(
+                user=request.user,
+                homework=homework,
+                wrong_answer_string=wrong_answers,
+            )
 
         return JsonResponse({
             "result": True,
-            "next": "",
+            "class_pk": homework.study_class.pk,
         })

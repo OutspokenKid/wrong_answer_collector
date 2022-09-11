@@ -2,50 +2,42 @@
 {% extends 'base.html' %}
 
 <!-- header에 넣을 블럭. -->
-{% block title %}새로운 숙제 만들기{% endblock title %}
+{% block title %}새로운 숙제 추가{% endblock title %}
 
 <!-- body에 넣을 블럭. -->
 {% block content %}
 
 <div class="div_container">
+    
+    <span class="text_title">과목 선택</span>
 
-    <div id="div_container1" class="flex flex-col justify-start w-full">
-        <span class="text_title">반 선택</span>
-    
-        <div class="flex flex-row flex-wrap mt-4">
-            {% for study_class in study_classes %}
-            <button id="btn_class_{{study_class.pk}}" onclick="on_class_selected(this, {{study_class.pk}})" class="mt-2 mr-2 btn_blue_off">{{study_class}}</button>
-            {% endfor %}
-        </div>
-        <button id="btn_confirm1" class="mt-4 btn_green_on">확인</button>
-    </div>
-    
-    <div id="div_container2" class="flex-col justify-start hidden w-full">
-        <span class="text_title">과목 선택</span>
-    
-        <!-- 여기에 해당 반의 과목 리스트 띄워주기. -->
-        <div id="div_container_subject_list" class="flex flex-row flex-wrap"></div>
-    
-        <span class="mt-4 text_title">교재 선택</span>
-    
-        <!-- 여기에 해당 반의 교재 리스트 띄워주기. -->
-        <div id="div_container_book_list" class="flex flex-row flex-wrap"></div>
-    
-        <span class="mt-4 text_title">인원 선택</span>
-    
-        <!-- 여기에 해당 반의 인원 띄워주기. -->
-        <div id="div_container_user_list" class="flex flex-row flex-wrap"></div>
-    
-        <span class="mt-4 text_title">숙제 내용</span>
-        <input id="input_homework" class="px-4 py-2 mt-4 rounded-lg w-khg-half bg-blue-50 hover:bg-blue-50 focus:outline-none focus:bg-blue-50" type="text" placeholder="ex) 지수 전체 or 1~113번">
-    
-        <div class="flex flex-row mt-4">
-            {% csrf_token %}
-            <button id="btn_back_to_container1" class="mr-2 btn_red_on">이전</button>
-            <button id="btn_submit" class="mr-2 btn_green_on">확인</button>
-        </div>
+    <!-- 여기에 해당 반의 과목 리스트 띄워주기. -->
+    <div id="div_container_subject_list" class="flex flex-row flex-wrap">
         
+        {% for subject in study_class.study_group.subjects.all %}
+        <button id="btn_subject_{{subject.pk}}" class="mt-2 mr-2 btn_blue_off" onclick="on_subject_selected(this, {{subject.pk}})">{{subject.subject_name}}</button>
+        {% endfor %}
+            
     </div>
+
+    <span class="mt-4 text_title">교재 선택</span>
+
+    <!-- 여기에 해당 반의 교재 리스트 띄워주기. -->
+    <div id="div_container_book_list" class="flex flex-row flex-wrap">
+        {% for book in study_class.study_group.books.all %}
+        <button id="btn_book_{{book.pk}}" class="mt-2 mr-2 btn_blue_off" onclick="on_book_selected(this, {{book.pk}})">{{book.book_name}}</button>
+        {% endfor %}
+    </div>
+
+    <span class="mt-4 text_title">숙제 내용</span>
+    <input id="input_homework" class="px-4 py-2 mt-4 rounded-lg w-khg-half bg-blue-50 hover:bg-blue-50 focus:outline-none focus:bg-blue-50" type="text" placeholder="ex) 지수 전체 or 1~113번">
+
+    <div class="flex flex-row mt-4">
+        {% csrf_token %}
+        <button id="btn_back_to_container1" class="mr-2 btn_red_on">이전</button>
+        <button id="btn_submit" class="mr-2 btn_green_on">확인</button>
+    </div>
+
 </div>
 
 
@@ -53,102 +45,13 @@
 <script type="module">
     import * as library_http from "{% static 'js/library_http.js' %}"
 
-    document.getElementById("btn_confirm1").addEventListener("click", function() {
-
-        if(selected_class_pk == -1) {
-            alert("반 선택 해야 함.");
-            return;
-        } else {
-            document.getElementById("div_container1").classList.add("hidden");
-            document.getElementById("div_container1").classList.remove("flex");
-
-            const on_success = function(data) {
-
-                // 과목 추가.
-                let subject_objects = JSON.parse(data.subject_objects);
-                let innerHtml = "";
-
-                for(let i=0; i<subject_objects.length; i++) {
-
-                    innerHtml += "<button id='btn_subject_" + subject_objects[i].pk + "' onclick='on_subject_selected(this, " + subject_objects[i].pk + ")' class='mt-2 mr-2 btn_blue_off'>" + subject_objects[i].subject_name + "</button>";
-                }
-
-                document.getElementById("div_container_subject_list").innerHTML = innerHtml;
-
-                // 책 추가.
-                let book_objects = JSON.parse(data.book_objects);
-                innerHtml = "";
-
-                for(let i=0; i<book_objects.length; i++) {
-
-                    innerHtml += "<button id='btn_book_" + book_objects[i].pk + "' onclick='on_book_selected(this, " + book_objects[i].pk + ")' class='mt-2 mr-2 btn_blue_off'>" + book_objects[i].book_name + "</button>";
-                }
-
-                document.getElementById("div_container_book_list").innerHTML = innerHtml;
-
-                // 책 유저.
-                let user_objects = JSON.parse(data.user_objects);
-                innerHtml = "";
-
-                for(let i=0; i<user_objects.length; i++) {
-                    selected_user_pks.push(user_objects[i].pk);
-
-                    if(!user_objects[i].is_staff) {
-                        innerHtml += "<button id='btn_user_" + user_objects[i].pk + "' onclick='on_user_selected(this, " + user_objects[i].pk + ")' class='mt-2 mr-2 btn_blue_on'>" + user_objects[i].username + "</button>";
-                    }
-                }
-
-                document.getElementById("div_container_user_list").innerHTML = innerHtml;
-
-                if(data != null && data.result) {
-                    document.getElementById("div_container2").classList.remove("hidden");
-                    document.getElementById("div_container2").classList.add("flex");
-                }
-            }
-
-            const on_fail = function() {
-
-                alert("반 정보 불러오기 실패...");
-            }
-
-            let url = "{% url 'classes:class_info' 870901 %}".replace("870901", "" + selected_class_pk);
-            library_http.load_by_ajax_get(url, on_success, on_fail);
-        }
-    });
-
-    document.getElementById("btn_back_to_container1").addEventListener("click", function() {
-
-        document.getElementById("div_container2").classList.add("hidden");
-        document.getElementById("div_container2").classList.remove("flex");
-
-        document.getElementById("div_container1").classList.add("flex");
-        document.getElementById("div_container1").classList.remove("hidden");
-
-        // 선택 초기화.
-        selected_subject_pk = -1;
-        selected_book_pk = -1;
-
-        // 컨테이너 비워주기.
-        document.getElementById("div_container_subject_list").innerHTML = "";
-        document.getElementById("div_container_book_list").innerHTML = "";
-
-        // 입력창 비워주기.
-        document.getElementById("input_homework").value = "";
-    });
-
     document.getElementById("btn_submit").addEventListener("click", function() {
 
-        if(selected_class_pk == -1) {
-            alert("반 선택 해야 함.");
-            return;
-        } else if(selected_subject_pk == -1) {
+        if(selected_subject_pk == -1) {
             alert("과목 선택해야 함.");
             return;
         } else if(selected_book_pk == -1) {
             alert("교재 선택해야 함.");
-            return;
-        } else if(selected_user_pks.length == 0) {
-            alert("적어도 한명 이상 선택해야 함.");
             return;
         }
 
@@ -159,11 +62,11 @@
             return;
         }
 
-        let class_name = document.getElementById("btn_class_" + selected_class_pk).innerText;
         let subject_name = document.getElementById("btn_subject_" + selected_subject_pk).innerText;
         let book_name = document.getElementById("btn_book_" + selected_book_pk).innerText;
 
-        if(confirm(class_name + ", " + subject_name + ", " + book_name + " 맞음?")) {
+        if(confirm(subject_name + ", " + book_name + "\n" + homework_text)) {
+            
             const on_success = function(data) {
                 
                 if(data != null && data.result) {
@@ -172,7 +75,7 @@
                         alert(data.message);
                     }
 
-                    location.href = "{% url 'homeworks:homework_list' %}";
+                    location.href = "{% url 'classes:class_detail' study_class.pk %}";
                 }
             }
 
@@ -181,13 +84,10 @@
                 alert("숙제 등록 실패... 문의 바람.");
             }
 
-            const post_data = "selected_class_pk=" + encodeURIComponent(selected_class_pk)
+            const post_data = "selected_class_pk=" + encodeURIComponent({{study_class.pk}})
                 + "&selected_subject_pk=" + encodeURIComponent(selected_subject_pk)
                 + "&selected_book_pk=" + encodeURIComponent(selected_book_pk)
-                + "&selected_user_pks=" + encodeURIComponent(selected_user_pks)
                 + "&homework_text=" + encodeURIComponent(homework_text);
-
-            console.log(post_data);
 
             library_http.load_by_ajax_post("{% url 'homeworks:new_homework' %}", post_data, on_success, on_fail);     
         }
@@ -197,36 +97,8 @@
 
 <script>
 
-    let selected_class_pk = -1;
     let selected_subject_pk = -1;
     let selected_book_pk = -1;
-    let selected_user_pks = [];
-
-    function on_class_selected(view, pk) {
-
-        // 아무 것도 선택되지 않은 경우.
-        if(selected_class_pk == -1) {
-            view.classList.remove("btn_blue_off");
-            view.classList.add("btn_blue_on");
-            selected_class_pk = pk;
-
-        // 선택 해제하는 경우.
-        } else if(selected_class_pk == pk) {
-            view.classList.remove("btn_blue_on");
-            view.classList.add("btn_blue_off");
-            selected_class_pk = -1;
-
-        // 선택된게 있는데 다른 것을 선택한 경우.
-        } else {
-            last_selected_view = document.getElementById("btn_class_" + selected_class_pk);
-            last_selected_view.classList.remove("btn_blue_on");
-            last_selected_view.classList.add("btn_blue_off");
-
-            view.classList.remove("btn_blue_off");
-            view.classList.add("btn_blue_on");
-            selected_class_pk = pk;
-        }
-    }
 
     function on_subject_selected(view, pk) {
 
@@ -277,27 +149,6 @@
             view.classList.remove("btn_blue_off");
             view.classList.add("btn_blue_on");
             selected_book_pk = pk;
-        }
-    }
-
-    function on_user_selected(view, pk) {
-
-        // 추가되어 있는 유저라면,
-        if(selected_user_pks.includes(pk)) {
-            
-            for(let i=0; i<selected_user_pks.length; i++) {
-
-                if(selected_user_pks[i] == pk) {
-                    selected_user_pks.splice(i, 1);
-                }
-            }
-            
-            view.classList.add("btn_blue_off");
-            view.classList.remove("btn_blue_on");
-        } else {
-            selected_user_pks.push(pk);
-            view.classList.add("btn_blue_on");
-            view.classList.remove("btn_blue_off");
         }
     }
 

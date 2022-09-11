@@ -1,0 +1,23 @@
+<!-- 기본 틀이 될 base.html 상속. -->
+{% extends 'base.html' %}
+
+<!-- header에 넣을 블럭. -->
+{% block title %}반 목록{% endblock title %}
+
+<!-- body에 넣을 블럭. -->
+{% block content %}
+
+<div id="div_container1" class="div_container">
+
+    <span class="text_title">반 목록</span>
+    
+    <div class="flex flex-row flex-wrap py-2">
+        
+        {% for study_group in study_groups %}
+        <a href="{% url 'classes:class_list' %}?group_pk={{study_group.pk}}" class="mb-2 mr-2 btn_blue_off">{{study_group}}</a>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

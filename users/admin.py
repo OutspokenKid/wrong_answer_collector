@@ -8,12 +8,13 @@ from classes import models as class_models
 class CustomUserAdmin(UserAdmin):
 
     list_display = (
+        "pk",
         "username",
         "is_staff",
-        "get_study_classes",
+        "get_study_groups",
     )
 
     fieldsets = (
-        (None, {"fields": ("username", "is_staff", "study_class")},),
+        (None, {"fields": ("username", "is_staff", "study_group")},),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
     )

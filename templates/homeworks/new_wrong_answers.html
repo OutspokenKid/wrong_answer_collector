@@ -26,7 +26,7 @@
         {% endfor %}
         <button onclick="on_clear_clicked()" class="w-full btn_red_on">지우기</button>
         <button onclick="on_number_clicked(0)" class="w-full btn_blue_on">0</button>
-        <button onclick="on_add_clicked()" class="w-full btn_green_on">번호 추가</button>
+        <button onclick="on_add_clicked()" class="w-full btn_green_on">추가</button>
 
         {% csrf_token %}
         <button id="btn_submit" class="w-full col-span-3 btn_green_on">오답 입력 완료</button>
@@ -48,8 +48,8 @@
                     if(data.message) {
                         alert(data.message);
                     }
-                    
-                    location.href = "{% url 'homeworks:homework_list' %}";
+
+                    location.href = "{% url 'classes:class_detail' pk=8709010000 %}".replace("8709010000", {{class_pk}});
                 }
             }
 
@@ -157,6 +157,12 @@
             set_wrong_answers_view();       
         }
     }
+
+    window.addEventListener("DOMContentLoaded", function() {
+
+        wrong_answers = [{{wrong_answer_string}}];
+        set_wrong_answers_view();
+    });
 
 </script>
 
