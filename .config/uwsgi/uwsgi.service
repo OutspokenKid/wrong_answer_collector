@@ -3,7 +3,7 @@ Description=uWSGI service
 After=syslog.target
 
 [Service]
-ExecStart=/home/ubuntu/myvenv/bin/uwsgi -i /srv/blsn/.config/uwsgi/blsn.ini
+ExecStart=/home/ubuntu/myvenv/bin/uwsgi -i /srv/wrong_answer_collector/.config/uwsgi/wronganswer.ini
 
 Restart=always
 KillSignal=SIGQUIT
