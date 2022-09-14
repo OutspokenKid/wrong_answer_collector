@@ -17,6 +17,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
 class StudyClassAdmin(admin.ModelAdmin):
 
     list_display = (
+        "study_title",
         "study_group",
         "subject",
         "studied_at",

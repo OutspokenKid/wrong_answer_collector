@@ -28,6 +28,7 @@ class WrongAnswersAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "homework",
+        "created_at",
         "wrong_answer_string",
     )
 

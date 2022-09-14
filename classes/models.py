@@ -54,6 +54,7 @@ class StudyClass(core_models.TimeStampedModel):
 
     study_group : 어느 반의 수업인지.
     subject : 어느 과목인지.
+    study_title : 수업 제목
     studied_at : 수업한 날과 시간.
     concept : 그날 수업한 개념.
     study_class_video_ids : 그날 수업의 영상.
@@ -61,13 +62,19 @@ class StudyClass(core_models.TimeStampedModel):
     """
 
     def __str__(self) -> str:
-        return f"{self.study_group} - {self.concept}"
+
+        if self.study_title is None:
+            return f"{self.study_group} - {self.concept}"
+        else:
+            return f"{self.study_group} - {self.study_title}"
 
     study_group = models.ForeignKey(
         "StudyGroup", related_name="classes", blank=True, null=True, on_delete=models.CASCADE)
 
     subject = models.ForeignKey(
         "classes.Subject", related_name="classes", null=True, on_delete=models.CASCADE)
+
+    study_title = models.CharField(max_length=40, blank=True, null=True)
 
     studied_at = models.DateTimeField(blank=True, null=True)
 
