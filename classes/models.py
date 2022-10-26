@@ -1,5 +1,6 @@
 from django.db import models
 from core import models as core_models
+from homeworks import models as homework_models
 import json
 
 
@@ -112,6 +113,25 @@ class StudyClass(core_models.TimeStampedModel):
         if self.homework_video_ids:
 
             return json.decoder.JSONDecoder().decode(self.homework_video_ids)
+
+    def get_homework_text(self):
+
+        homeworks = homework_models.Homework.objects.filter(study_class=self)
+
+        if homeworks:
+
+            homework_text = None
+
+            for homework in homeworks:
+
+                if homework_text is None:
+                    homework_text = f"숙제 : {homework.book.book_name} - {homework.homework_text}"
+                else:
+                    homework_text += f", {homework.book.book_name} - {homework.homework_text}"
+
+            return homework_text
+        else:
+            return "숙제 등록 전 또는 숙제 없음"
 
 
 class Subject(core_models.TimeStampedModel):

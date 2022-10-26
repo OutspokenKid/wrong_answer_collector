@@ -18,6 +18,7 @@
         {% for study_class in study_classes %}
         <a href="{% url 'classes:class_detail' study_class.pk %}" class="flex flex-col w-full mt-2">
             <span class="text_info">{{study_class}}</span>
+            <span class="text_info">{{study_class.get_homework_text}}</span>
             <span class="text_info">{{study_class.studied_at|date:'y년 m월 d일 D A g시'}}</span>
         </a>
 
